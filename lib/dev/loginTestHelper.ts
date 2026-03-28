@@ -32,7 +32,16 @@ export function buildDisplayName(user: Pick<DevLoginHintUser, "first_name" | "la
 
 export async function fetchDevLoginHints(): Promise<DevLoginHintsResponse> {
   const base = getApiBaseUrl();
-  const res = await fetch(`${base}/api/dev/login-hints`, { method: "GET" });
+  const url = `${base}/api/dev/login-hints`;
+  let res: Response;
+  try {
+    res = await fetch(url, { method: "GET" });
+  } catch {
+    return {
+      success: false,
+      message: `Could not reach the API at ${base}. Start DCSPACE_NEXT_API with \`next dev\` (same port as NEXT_PUBLIC_API_URL) and try again.`,
+    };
+  }
   let json: DevLoginHintsResponse;
   try {
     json = (await res.json()) as DevLoginHintsResponse;
